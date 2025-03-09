@@ -6,30 +6,30 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,atlas,ttf
 version = 0.1
 
-# Icon and Presplash
-icon.filename = %(source.dir)s/data/icon.png
-presplash.filename = %(source.dir)s/data/presplash.png
+# Main module
+source.include_exts = py,png,jpg,kv,atlas,ttf
+source.include_patterns = assets/*,images/*,fonts/*
+source.exclude_exts = spec,md
+source.exclude_dirs = bin,build,dist
+source.exclude_patterns = Thumbs.db
 
-# Minimal requirements for initial build success
-requirements = python3,kivy
+# Entry point
+main.filename = main.py
+
+# Requirements
+requirements = python3==3.9,kivy==2.1.0,pillow
 
 # Android specific
 android.permissions = INTERNET
-android.api = 30
+android.api = 29
 android.minapi = 21
-android.sdk = 30
-android.ndk = 21
+android.sdk = 29
+android.ndk = 23b
 android.accept_sdk_license = True
 android.arch = arm64-v8a
 
-# Bootstrap and build mode
-p4a.branch = master
-p4a.bootstrap = sdl2
-
-# (str) Supported orientation
+# Basic settings
 orientation = portrait
-
-# (bool) Fullscreen mode
 fullscreen = 0
 
 [buildozer]
