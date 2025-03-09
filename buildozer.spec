@@ -1,37 +1,47 @@
 [app]
+
+# (str) Title of your application
 title = Trading App
+
+# (str) Package name
 package.name = tradingapp
+
+# (str) Package domain (needed for android/ios packaging)
 package.domain = org.tradingapp
+
+# (str) Source code where the main.py live
 source.dir = .
-source.include_exts = py,png,jpg,kv,atlas,ttf
+
+# (list) Source files to include (let empty to include all the files)
+source.include_exts = py,png,jpg,kv,atlas
+
+# (list) List of inclusions using pattern matching
+source.include_patterns = assets/*,images/*,fonts/*
+
+# (str) Application versioning
 version = 0.1
 
-# Main module
-source.include_exts = py,png,jpg,kv,atlas,ttf
-source.include_patterns = assets/*,images/*,fonts/*
-source.exclude_exts = spec,md
-source.exclude_dirs = bin,build,dist
-source.exclude_patterns = Thumbs.db
+# (list) Application requirements
+requirements = python3,kivy
 
-# Entry point
-main.filename = main.py
-
-# Requirements
-requirements = python3==3.9,kivy==2.1.0,pillow
-
-# Android specific
-android.permissions = INTERNET
-android.api = 29
-android.minapi = 21
-android.sdk = 29
-android.ndk = 23b
-android.accept_sdk_license = True
-android.arch = arm64-v8a
-
-# Basic settings
+# (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)
 orientation = portrait
+
+# (bool) Indicate if the application should be fullscreen or not
 fullscreen = 0
 
+# (list) Permissions
+android.permissions = INTERNET
+
+# (int) Target Android API, should be as high as possible.
+android.api = 28
+
+# (int) Minimum API your APK will support.
+android.minapi = 21
+
+# (list) The Android archs to build for
+android.archs = arm64-v8a
+
 [buildozer]
+# (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
 log_level = 2
-warn_on_root = 1
