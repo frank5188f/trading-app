@@ -17,7 +17,8 @@ requirements = python3,\
     numpy,\
     akshare,\
     matplotlib,\
-    pillow
+    pillow,\
+    sdl2_ttf==2.0.15
 
 # (str) Supported orientation (one of landscape, portrait or all)
 orientation = portrait
@@ -27,10 +28,11 @@ fullscreen = 0
 
 # Android specific
 android.permissions = INTERNET
-android.api = 34
+android.api = 33
 android.minapi = 21
-android.sdk = 34
+android.sdk = 33
 android.ndk = 25b
+android.ndk_api = 21
 android.accept_sdk_license = True
 android.arch = arm64-v8a
 
@@ -92,11 +94,12 @@ android.meta_data = python.version=3
 # (bool) Enable AndroidX support. Enable when 'android.gradle_dependencies'
 # contains an 'androidx' package, or any package from Kotlin source.
 # android.enable_androidx requires android.api >= 28
-#android.enable_androidx = True
+android.enable_androidx = True
 
 # (str) python-for-android branch to use, if not master, useful to try
 # not yet released features
-#p4a.branch = master
+p4a.branch = master
+p4a.bootstrap = sdl2
 
 # (str) OUYA Console category. Should be one of GAME or APP
 # If you leave this blank, OUYA support will not be enabled

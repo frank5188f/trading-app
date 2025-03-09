@@ -18,11 +18,15 @@ jobs:
       with:
         python-version: '3.9'
 
+    - name: Enable 32-bit architecture
+      run: |
+        sudo dpkg --add-architecture i386
+        sudo apt-get update
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install buildozer
-        sudo apt-get update
+        pip install buildozer cython==0.29.33
         sudo apt-get install -y \
             python3-pip \
             build-essential \
@@ -60,7 +64,9 @@ jobs:
             libidn11:i386 \
             zip \
             unzip \
-            openjdk-8-jdk
+            openjdk-8-jdk \
+            wget \
+            lld
 
     - name: Build with Buildozer
       run: |
@@ -68,8 +74,11 @@ jobs:
         mkdir -p fonts
         cp /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf fonts/simsun.ttf
         
-        # Build APK
-        buildozer android debug
+        # Show buildozer version
+        buildozer --version
+        
+        # Build APK with verbose output
+        buildozer android debug -v
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
