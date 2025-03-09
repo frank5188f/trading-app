@@ -11,14 +11,39 @@ icon.filename = %(source.dir)s/data/icon.png
 presplash.filename = %(source.dir)s/data/presplash.png
 
 # (list) Application requirements
+# Simplified requirements to ensure basic functionality first
 requirements = python3,\
-    kivy==2.3.1,\
-    pandas,\
-    numpy,\
-    akshare,\
-    matplotlib,\
+    kivy==2.2.1,\
     pillow,\
-    sdl2_ttf==2.0.15
+    numpy,\
+    pandas==1.5.3,\
+    matplotlib==3.5.3,\
+    akshare
+
+# Android specific
+android.permissions = INTERNET
+android.api = 31
+android.minapi = 21
+android.sdk = 31
+android.ndk = 23b
+android.ndk_api = 21
+android.accept_sdk_license = True
+android.arch = arm64-v8a
+
+# Build options
+android.gradle_dependencies = "androidx.webkit:webkit:1.4.0"
+android.enable_androidx = True
+android.add_aars = androidx.webkit:webkit:1.4.0
+
+# Bootstrap and build mode
+p4a.branch = develop
+p4a.bootstrap = sdl2
+
+# Build settings
+android.release_artifact = apk
+android.debug = True
+android.logcat_filters = *:S python:D
+android.copy_libs = 1
 
 # (str) Supported orientation (one of landscape, portrait or all)
 orientation = portrait
@@ -26,38 +51,16 @@ orientation = portrait
 # (bool) Indicate if the application should be fullscreen or not
 fullscreen = 0
 
-# Android specific
-android.permissions = INTERNET
-android.api = 33
-android.minapi = 21
-android.sdk = 33
-android.ndk = 25b
-android.ndk_api = 21
-android.accept_sdk_license = True
-android.arch = arm64-v8a
-
 # (bool) Skip android.sdk installation
 android.skip_sdk_installation = False
 
-# (bool) Indicate whether to sign the apk
-android.release_artifact = apk
-
 # (str) Android NDK version to use
-android.ndk_version = 25b
+android.ndk_version = 23b
 
 # (bool) If True, then skip trying to update the Android sdk
 # This can be useful to avoid excess Internet downloads or save time
 # when an update is due and you just want to test/build your package
 android.skip_update = False
-
-# (str) Android logcat filters to use
-android.logcat_filters = *:S python:D
-
-# (bool) Copy library instead of making a libpymodules.so
-android.copy_libs = 1
-
-# (str) The Android arch to build for, choices: armeabi-v7a, arm64-v8a, x86, x86_64
-android.arch = arm64-v8a
 
 # (list) Android application meta-data to set (key=value format)
 android.meta_data = python.version=3
@@ -90,16 +93,6 @@ android.meta_data = python.version=3
 # (list) List of Java files to add to the android project (can be java or a
 # directory containing the files)
 #android.add_src =
-
-# (bool) Enable AndroidX support. Enable when 'android.gradle_dependencies'
-# contains an 'androidx' package, or any package from Kotlin source.
-# android.enable_androidx requires android.api >= 28
-android.enable_androidx = True
-
-# (str) python-for-android branch to use, if not master, useful to try
-# not yet released features
-p4a.branch = master
-p4a.bootstrap = sdl2
 
 # (str) OUYA Console category. Should be one of GAME or APP
 # If you leave this blank, OUYA support will not be enabled
