@@ -7,23 +7,72 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-android:
-    name: Build for Android
-    runs-on: ubuntu-latest
-
+  build:
+    name: Build APK with Buildozer
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build with Buildozer
-        uses: ArtemSBulgakov/buildozer-action@v1
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
-          command: buildozer android debug
-          buildozer_version: stable
+          python-version: '3.9'
+          cache: 'pip'
 
-      - name: Upload artifacts
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libsdl2-dev \
+            libsdl2-image-dev \
+            libsdl2-mixer-dev \
+            libsdl2-ttf-dev \
+            libportmidi-dev \
+            libswscale-dev \
+            libavformat-dev \
+            libavcodec-dev \
+            libfreetype6-dev \
+            build-essential \
+            libgl1 \
+            git
+
+      - name: Install buildozer and dependencies
+        run: |
+          pip install --upgrade pip
+          pip install --upgrade setuptools wheel
+          pip install 'cython<3.0.0' 'buildozer==1.5.0'
+
+      - name: Create folders
+        run: |
+          mkdir -p ~/.buildozer/android/platform/
+          mkdir -p ~/.buildozer/android/platform/android-ndk-r23b
+
+      - name: Cache Android NDK
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.buildozer/android/platform/android-ndk-r23b
+          key: buildozer-ndk-${{ hashFiles('buildozer.spec') }}
+
+      - name: Build APK
+        run: |
+          # Create font directories if needed
+          mkdir -p fonts assets images
+          echo "Placeholder font" > fonts/simsun.ttf
+
+          # Build with verbose output
+          buildozer android debug -v
+
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: package
+          name: tradingapp-debug
           path: bin/*.apk
           if-no-files-found: error
