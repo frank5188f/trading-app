@@ -1,4 +1,4 @@
-name: Build
+name: Build APK
 on:
   push:
     branches: [ main ]
@@ -7,72 +7,96 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: Build APK with Buildozer
-    runs-on: ubuntu-20.04
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-22.04
+    
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Python
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
           cache: 'pip'
 
-      - name: Setup JDK
+      - name: Setup Java
         uses: actions/setup-java@v3
         with:
-          distribution: 'zulu'
+          distribution: 'temurin'
           java-version: '11'
 
-      - name: Install Linux dependencies
+      - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            libsdl2-dev \
-            libsdl2-image-dev \
-            libsdl2-mixer-dev \
-            libsdl2-ttf-dev \
-            libportmidi-dev \
-            libswscale-dev \
-            libavformat-dev \
-            libavcodec-dev \
-            libfreetype6-dev \
-            build-essential \
-            libgl1 \
-            git
-
-      - name: Install buildozer and dependencies
+            zip \
+            unzip \
+            openjdk-11-jdk \
+            python3-pip \
+            autoconf \
+            automake \
+            libtool \
+            libffi-dev \
+            libssl-dev \
+            pkg-config \
+            zlib1g-dev
+        
+      - name: Install Buildozer
         run: |
-          pip install --upgrade pip
-          pip install --upgrade setuptools wheel
-          pip install 'cython<3.0.0' 'buildozer==1.5.0'
+          python -m pip install --upgrade pip
+          pip install buildozer==1.5.0 cython==0.29.33
 
-      - name: Create folders
-        run: |
-          mkdir -p ~/.buildozer/android/platform/
-          mkdir -p ~/.buildozer/android/platform/android-ndk-r23b
-
-      - name: Cache Android NDK
+      - name: Cache Buildozer global directory
         uses: actions/cache@v3
         with:
-          path: |
-            ~/.buildozer/android/platform/android-ndk-r23b
-          key: buildozer-ndk-${{ hashFiles('buildozer.spec') }}
+          path: ~/.buildozer
+          key: ${{ runner.os }}-buildozer-${{ hashFiles('buildozer.spec') }}
+          restore-keys: |
+            ${{ runner.os }}-buildozer-
 
-      - name: Build APK
+      - name: Build ultra-simple app
         run: |
-          # Create font directories if needed
-          mkdir -p fonts assets images
-          echo "Placeholder font" > fonts/simsun.ttf
-
-          # Build with verbose output
-          buildozer android debug -v
+          # Create ultra-simple app (one file)
+          rm -f main.py
+          echo 'from kivy.app import App
+          from kivy.uix.button import Button
+          class SimpleApp(App):
+              def build(self):
+                  return Button(text="Hello World")
+          if __name__ == "__main__":
+              SimpleApp().run()' > main.py
+          
+          # Create ultra-simple buildozer.spec
+          rm -f buildozer.spec
+          cat > buildozer.spec << EOF
+          [app]
+          title = Simple App
+          package.name = simpleapp
+          package.domain = org.test
+          source.dir = .
+          source.include_exts = py
+          version = 0.1
+          requirements = python3,kivy
+          orientation = portrait
+          fullscreen = 0
+          android.permissions = INTERNET
+          android.api = 27
+          android.minapi = 21
+          android.ndk = 23c
+          android.arch = arm64-v8a
+          p4a.branch = develop
+          [buildozer]
+          log_level = 2
+          EOF
+          
+          # Build the APK
+          buildozer android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: tradingapp-debug
+          name: simpleapp-debug
           path: bin/*.apk
           if-no-files-found: error
