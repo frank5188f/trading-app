@@ -8,84 +8,24 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
+    container:
+      image: codepoet/kivy-buildozer-android-docker:latest
 
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.9'
-
-    - name: Enable 32-bit architecture
-      run: |
-        sudo dpkg --add-architecture i386
-        sudo apt-get update
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install buildozer==1.5.0 cython==0.29.33
-        sudo apt-get install -y \
-            python3-pip \
-            build-essential \
-            git \
-            python3 \
-            python3-dev \
-            ffmpeg \
-            libsdl2-dev \
-            libsdl2-image-dev \
-            libsdl2-mixer-dev \
-            libsdl2-ttf-dev \
-            libportmidi-dev \
-            libswscale-dev \
-            libavformat-dev \
-            libavcodec-dev \
-            zlib1g-dev \
-            libgstreamer1.0 \
-            gstreamer1.0-plugins-base \
-            gstreamer1.0-plugins-good \
-            libpango1.0-dev \
-            libgl1-mesa-dev \
-            libgles2-mesa-dev \
-            xvfb \
-            xauth \
-            automake \
-            autoconf \
-            libtool \
-            pkg-config \
-            ccache \
-            libncurses5:i386 \
-            libstdc++6:i386 \
-            libgtk2.0-0:i386 \
-            libpangox-1.0-0:i386 \
-            libpangoxft-1.0-0:i386 \
-            libidn11:i386 \
-            zip \
-            unzip \
-            openjdk-8-jdk
-
-    - name: Cache Buildozer global directory
-      uses: actions/cache@v3
-      with:
-        path: .buildozer_global
-        key: buildozer-global-${{ hashFiles('buildozer.spec') }}
-
     - name: Build with Buildozer
-      env:
-        BUILDOZER_WARN_ON_ROOT: 0
       run: |
         # Create fonts directory and copy font
         mkdir -p fonts
         cp /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf fonts/simsun.ttf
         
-        # Show versions
-        python --version
-        buildozer --version
+        # Give buildozer permissions to directory
+        chown -R user:user .
         
-        # Build APK with verbose output
-        buildozer android debug -v
+        # Build APK with buildozer
+        su user -c "buildozer android debug"
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
