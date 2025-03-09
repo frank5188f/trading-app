@@ -76,4 +76,4 @@ jobs:
       with:
         name: app-debug
         path: bin/*.apk
-        retention-days: 90 
+        retention-days: 90
